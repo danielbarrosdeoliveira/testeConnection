@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teste API</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Oswald&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #FFFAFF;
+  font-family: 'Oswald', sans-serif;
+}
+
+.container {
+  max-width: 960px;
+  width: 100%;
+  justify-content: center;
+  align-self: center;
+  margin: 0 auto;
+}
+
+.sucess {
+  color: green;
+}
+
+.failed {
+  color: red;
+}
+
+p {
+  font-size: 1.250rem;
+}
+
+div#divGet {
+  width: 100%;
+  height: 200px;
+  margin: 1rem auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+div#divGet button#buttonGet {
+  font-weight: bold;
+  color: white;
+  background: #315F6E;
+  margin: 1rem 0;
+  border: none;
+  outline: none;
+  width: 120px;
+  height: 30px;
+  border-radius: 10px;
+  transition: 300ms;
+}
+
+div#divGet button#buttonGet:hover {
+  cursor: pointer;
+  background: #54A1BA;
+}
+
+div#divGet span#resultGet p {
+  font-size: 1.250rem;
+  text-transform: uppercase;
+}
+
+div#divPost{
+  width: 100%;
+  height: 200px;
+  margin: 1rem auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+div#divPost button#buttonPost {
+  font-weight: bold;
+  color: white;
+  background: #A19A40;
+  margin: 1rem 0;
+  border: none;
+  outline: none;
+  width: 120px;
+  height: 30px;
+  border-radius: 10px;
+  transition: 300ms;
+}
+
+div#divPost button#buttonPost:hover {
+  cursor: pointer;
+  background: #BAB34A;
+}
+
+div#divPost input {
+  width: 240px;
+}
+
+div#loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-self: center;
+  align-content: center;
+}
+
+.loader {
+  width: 60px;
+  height: 60px;
+  margin: 0;
+  background: transparent;
+  border-top: 4px solid #434af9;
+  border-right: 4px solid transparent;
+  border-radius: 50%;
+  -webkit-animation: 1s spin linear infinite;
+  animation: 1s spin linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="divGet">
+      <h2>TESTE DE GET</h2>
+      <button id="buttonGet">ENVIAR</button>
+      <p id="resultGetJS">Resposta...</p>
+    </div>
+    <div id="divPost">
+      <h2>TESTE DE POST</h2>
+      <button id="buttonPost">ENVIAR</button>
+      <p id="resultPostJS">Resposta...</p>
+    </div>
+  </main>
+
+  <script>
+    const buttonGet = document.getElementById('buttonGet');
+    const resultGetJS = document.getElementById('resultGetJS');
+    const resultPostJS = document.getElementById('resultPostJS');
+
+    let loader = `
+    <div id="loading">
+      <div class="loader"></div>
+    </div>
+    `;
+
+    async function getTest() {
+      const URL_GET = 'https://master-rest.api.g2ldigital.com/__health_check';
+
+      const options = {
+        method: 'GET',
+      }
+
+      resultGetJS.innerHTML = loader;
+
+      const response = await fetch(URL_GET, options);
+      const result = await response.json();
+
+      response.status == 200 ?
+        resultGetJS.innerHTML = ` 
+        <p class="sucess">Result Message: <span id="resultGet">${result.message}</span></p>
+        <p class="sucess">Status Code: ${response.status}</p>  
+      ` :
+        resultGetJS.innerHTML = `
+        <p class="failed">Não foi possível realizar o GET :(</p>
+        <p class="failed">Status Code: ${response.status}</p>
+      `;
+    }
+
+    async function postTest() {
+      const URL_POST = 'https://master-rest.api.g2ldigital.com/freightquote';
+
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: "teste@teste.com.br",
+          source: {},
+          destiny: {},
+        })
+      }
+
+
+      resultPostJS.innerHTML = loader;
+      const response = await fetch(URL_POST, options);
+
+      if (response.status == 418) {
+        resultPostJS.innerHTML = ` 
+          <p class="sucess">Result Message: <span id="resultGet">Dados enviados com sucesso! :)</span></p>
+          <p class="sucess">Status Code: ${response.status}</p>  
+        `
+      } else {
+        resultPostJS.innerHTML = `
+        <p class="failed">Não foi possível realizar o POST :(</p>
+        <p class="failed">Status Code: ${response.status}</p>
+      `;
+
+      }
+    }
+
+    buttonGet.addEventListener('click', getTest);
+    buttonPost.addEventListener('click', postTest);
+
+  </script>
+</body>
+</html>
